@@ -27,7 +27,12 @@ def go_check():
         # Malformed request
         return ApiResponse("Malformed package", None, ["Malformed request: Missing 'version' field."])
 
-    package = GoPackage(data["name"], data["version"], str(data["origin"] or ""))
+    origin = ""
+    if data["origin"]:
+        # The package has a specific origin to try
+        origin = data["origin"]
+
+    package = GoPackage(data["name"], data["version"], str(origin))
     compatibility = goPullEngine.pull_package(package)
 
     return ApiResponse("Compatibility result", compatibility.serialize(), []).build()
