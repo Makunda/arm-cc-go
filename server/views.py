@@ -18,5 +18,5 @@ def index():
 
 @app.route('/status/auth')
 @token_required
-def index():
+def index_auth():
     return ApiResponse("Health Check", {"Running": True, "Authenticated": True}, []).build()
