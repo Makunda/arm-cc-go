@@ -19,11 +19,11 @@ def go_check():
     data = request.json
 
     # Verify data sent
-    if not data["name"]:
+    if not "name" not in data:
         # Malformed request
         return ApiResponse("Malformed package", None, ["Malformed request: Missing 'name' field."])
 
-    if not data["version"]:
+    if "version" not in data:
         # Malformed request
         return ApiResponse("Malformed package", None, ["Malformed request: Missing 'version' field."])
 
