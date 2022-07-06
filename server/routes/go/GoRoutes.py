@@ -4,11 +4,13 @@ from server import app
 from flask import request
 
 from server.interfaces.ApiResponse import ApiResponse
+from server.middlewares import token_required
 
 goPullEngine = GoPullEngine()
 
 
 @app.route('/go/check', methods=['POST'])
+@token_required
 def index():
     """
         Check the compatibility of a Go package

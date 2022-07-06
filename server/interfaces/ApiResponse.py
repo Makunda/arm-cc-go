@@ -17,7 +17,7 @@ class ApiResponse:
     errors: List[str]
     code: int
 
-    def __init__(self, message: str, data: any = None, errors: List[str] = None, code: HTTPStatus = None):
+    def __init__(self, message: str, data: any = None, errors: List[str] = None, code: int = None):
         """
         Initialize an API response
         :param message: Message to pass to the API

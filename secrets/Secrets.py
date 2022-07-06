@@ -4,12 +4,19 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from utils.PathUtils import PathUtils
+from codes.ExitCodes import ExitCodes
 from utils.PrintUtils import PrintUtils
 
 load_dotenv()
 
 MODULE_NAME = os.getenv("MODULE_NAME", "ARM-CC-GO")
+
+API_TOKEN = os.getenv("API_TOKEN", None)
+if API_TOKEN is None:
+    PrintUtils.error("Missing API_TOKEN mandatory parameters. The system will now stop.")
+    sys.exit(ExitCodes.MISSING_API_TOKEN)
+else:
+    API_TOKEN = str(API_TOKEN)
 
 SERVER_HOST = os.getenv("SERVER_HOST", "0.0.0.0")
 SERVER_PORT = os.getenv("SERVER_PORT", "4000")
