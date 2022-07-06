@@ -20,7 +20,7 @@ def go_check():
     data = request.json
 
     # Verify data sent
-    if not "name" not in data:
+    if "name" not in data:
         # Malformed request
         return ApiResponse("Malformed request", None, ["Missing 'name' field."]).build()
 
