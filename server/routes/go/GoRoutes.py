@@ -28,7 +28,7 @@ def go_check():
         return ApiResponse("Malformed package", None, ["Malformed request: Missing 'version' field."])
 
     origin = ""
-    if data["origin"]:
+    if "origin" in data:
         # The package has a specific origin to try
         origin = data["origin"]
 
