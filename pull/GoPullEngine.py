@@ -54,8 +54,10 @@ class GoPullEngine:
             results.compatible = False
             results.error = output
 
+        # Package Name
         self.__logger.info(f"Package with name '{package.name}' as been flagged as '{results.compatible}'."
                            f" Reasons: {output}")
+
         # Return the package
         return results
 
@@ -69,7 +71,7 @@ class GoPullEngine:
         try:
             p = subprocess.run(args, capture_output=True, text=True)
 
-            print("Results for ", args, "Capture output", p.stdout, "Error", p.stderr)
+            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {p.stdout} - Error: {p.stderr}")
             return self.__build_results(package, p.stdout)
         except Exception as e:
             self.__logger.error(f"Failed to pull the package: {package_name}")
