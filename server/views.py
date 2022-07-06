@@ -1,6 +1,5 @@
 from logger.Logger import Logger
 from server import app
-from flask import request
 from server.interfaces.ApiResponse import ApiResponse
 
 ######################################################

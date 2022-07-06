@@ -36,7 +36,7 @@ class PathUtils:
         if os.path.isabs(path) and os.path.exists(path):
             return path
         else:
-            return os.path.join(base_url,path)
+            return os.path.join(base_url, path)
 
     @staticmethod
     def mergeFolder(path: str) -> None:

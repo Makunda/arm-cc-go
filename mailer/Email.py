@@ -1,10 +1,8 @@
 import email
-from email.headerregistry import Address
 from email.message import EmailMessage
 from typing import List
 
 from errors.mail.MailFormatError import MailFormatError
-from secrets.Secrets import MAILER_RECIPIENTS
 
 
 class Email:

@@ -10,6 +10,10 @@ from utils.PrintUtils import PrintUtils
 load_dotenv()
 
 MODULE_NAME = os.getenv("MODULE_NAME", "ARM-CC-GO")
+MODE = os.getenv("MODE", "production")
+
+IS_PROD: bool = MODE == "production" or MODE == "prod"
+IS_DEV: bool = not IS_PROD
 
 API_TOKEN = os.getenv("API_TOKEN", None)
 if API_TOKEN is None:

@@ -1,5 +1,4 @@
 import smtplib
-from typing import List
 
 from errors.internet.SocketInformationError import SocketInformationError
 from errors.mail.MailInitializationError import MailInitializationError
@@ -7,7 +6,6 @@ from errors.mail.MailSendingError import MailSendingError
 from logger.Logger import Logger
 from mailer.Email import Email
 from metaclass.SingletonMeta import SingletonMeta
-
 from secrets.Secrets import MAILER_ACTIVATION, MODULE_NAME, MAILER_RECIPIENTS, MAILER_USER, MAILER_HOSTNAME, \
     MAILER_PORT, MAILER_PASSWORD
 from utils.InternetUtils import InternetUtils

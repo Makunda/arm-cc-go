@@ -18,6 +18,9 @@ def main():
 
     PrintUtils.info(f"Initializing module: {MODULE_NAME}.")
 
+    from secrets.Secrets import MODE, IS_PROD
+    PrintUtils.info(f"Server will run in '{MODE}' mode")
+
     # Initiate the logger
     PrintUtils.info(f"Starting Logger.")
     from logger.Logger import Logger
@@ -53,7 +56,6 @@ def main():
         main_logger.error(f"Failed to start the web server.", e)
         sys.exit(ExitCodes.MODULE_INITIALIZATION_FAILED)
         # Execution stops here
-
 
 
 if __name__ == '__main__':

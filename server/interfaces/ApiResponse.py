@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import List
 
-from flask import Response, make_response, jsonify
+from flask import make_response, jsonify
 
 from server.errors.BadResponseDataError import BadResponseDataError
 from utils.SerializableUtils import SerializableUtils
@@ -63,6 +63,6 @@ class ApiResponse:
             'message': self.message,
             'data': self.data,
             'errors': self.errors
-            }),
+        }),
             self.code
         )

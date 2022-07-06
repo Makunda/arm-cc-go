@@ -1,6 +1,7 @@
+import platform
+
 from machine.enum.Architecture import Architecture
 from machine.enum.OperatingSystem import OperatingSystem
-import platform
 
 
 class PlatformChecker:

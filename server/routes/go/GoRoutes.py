@@ -1,8 +1,8 @@
+from flask import request
+
 from interface.go.GoPackage import GoPackage
 from pull.GoPullEngine import GoPullEngine
 from server import app
-from flask import request
-
 from server.interfaces.ApiResponse import ApiResponse
 from server.middlewares import token_required
 

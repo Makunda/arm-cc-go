@@ -2,8 +2,8 @@ import copy
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-from flask.logging import default_handler
 
+from flask.logging import default_handler
 
 from logger.LoggerUtils import LoggerUtils
 from metaclass.SingletonMeta import SingletonMeta
@@ -34,13 +34,11 @@ timestamp = ""
 INFO_FILE = f"{MODULE_NAME}_info_{timestamp}.log"
 INFO_FILE = os.path.join(log_folder, INFO_FILE)
 
-
 # Info File
 INFO_LOG_HANDLER = RotatingFileHandler(INFO_FILE, maxBytes=1048576, backupCount=5)
 INFO_LOG_HANDLER.setFormatter(
     logging.Formatter(f'%(asctime)s %(levelname)s : {MODULE_NAME} : %(message)s ' '[in %(pathname)s:%(lineno)d]'))
 INFO_LOG_HANDLER.setLevel(logging.INFO)
-
 
 # Error File
 ERROR_FILE = f"{MODULE_NAME}_errors_{timestamp}.log"

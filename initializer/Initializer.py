@@ -29,7 +29,6 @@ class Initializer:
             sys.exit(ExitCodes.GOLANG_NOT_INSTALLED)
             # The program stops here 
 
-
     # Pull test
     def pull_test(self) -> bool:
         """
