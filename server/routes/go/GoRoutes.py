@@ -11,7 +11,7 @@ goPullEngine = GoPullEngine()
 
 @app.route('/go/check', methods=['POST'])
 @token_required
-def index():
+def go_check():
     """
         Check the compatibility of a Go package
     """
@@ -19,15 +19,15 @@ def index():
     data = request.json
 
     # Verify data sent
-    if not data.name:
+    if not data["name"]:
         # Malformed request
         return ApiResponse("Malformed package", None, ["Malformed request: Missing 'name' field."])
 
-    if not data.version:
+    if not data["version"]:
         # Malformed request
         return ApiResponse("Malformed package", None, ["Malformed request: Missing 'version' field."])
 
-    package = GoPackage(data.name, data.version, str(data.origin or ""))
+    package = GoPackage(data["name"], data["version"], str(data["origin"] or ""))
     compatibility = goPullEngine.pull_package(package)
 
     return ApiResponse("Compatibility result", compatibility.serialize(), []).build()

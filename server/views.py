@@ -19,3 +19,6 @@ def index():
 @token_required
 def index_auth():
     return ApiResponse("Health Check", {"Running": True, "Authenticated": True}, []).build()
+
+
+import server.routes.go.GoRoutes

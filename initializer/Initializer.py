@@ -3,6 +3,8 @@ import sys
 
 from codes.ExitCodes import ExitCodes
 from logger.Logger import Logger
+from machine.PlatformChecker import PlatformChecker
+from machine.enum.OperatingSystem import OperatingSystem
 
 
 class Initializer:
@@ -10,6 +12,7 @@ class Initializer:
     Initialize the package manager
     """
     __logger = Logger.get("Initializer")
+    __platform: OperatingSystem = PlatformChecker.get_platform()
 
     # Verify Go is installed
     def verify_installed(self) -> bool:
@@ -18,7 +21,11 @@ class Initializer:
         :return:
         """
         try:
-            p = subprocess.run(["go", "version"], capture_output=True, text=True)
+            if self.__platform == OperatingSystem.WINDOWS:
+                p = subprocess.run(["go.exe", "version"], shell=True, capture_output=True, text=True)
+            else:
+                p = subprocess.run(["go", "version"], capture_output=True, text=True)
+
             stdout = str(p.stdout).replace("go version ", "")
             self.__logger.info(f"Version of GO detected: {stdout}")
             return True
