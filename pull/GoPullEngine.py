@@ -20,7 +20,7 @@ class GoPullEngine:
         """
         results = CompatibilityResult(package)
 
-        if not output:
+        if output == "":
             results.message = "Package is compatible"
             results.compatible = True
 
@@ -30,6 +30,10 @@ class GoPullEngine:
 
         elif "version must not be empty" in output:
             results.message = "Package version is empty"
+            results.compatible = True
+
+        elif "missing dot in first path element" in output:
+            results.message = "Package path is malformed"
             results.compatible = True
 
         # If the version is not found : fatal error
