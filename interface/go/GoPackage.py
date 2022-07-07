@@ -13,4 +13,4 @@ class GoPackage(Package):
         """
         Get the golang identifier to pull the package
         """
-        return f"{self.name}@{self.origin}"
+        return f"{self.name}@{self.version}"

@@ -28,6 +28,10 @@ class GoPullEngine:
             results.message = "Package is compatible"
             results.compatible = True
 
+        elif "version must not be empty" in output:
+            results.message = "Package version is empty"
+            results.compatible = True
+
         # If the version is not found : fatal error
         elif "fatal error" in output:
             # The pull encountered a fatal error
@@ -56,7 +60,7 @@ class GoPullEngine:
 
         # Package Name
         self.__logger.info(f"Package with name '{package.name}' as been flagged as '{results.compatible}'."
-                           f" Reasons: {output}")
+                           f" Reasons: {results.message}")
 
         # Return the package
         return results
