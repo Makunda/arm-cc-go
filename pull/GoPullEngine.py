@@ -14,53 +14,50 @@ class GoPullEngine:
 
     __logger = Logger.get("Go Pull Engine")
 
-    def __build_results(self, package: Package, output: str) -> CompatibilityResult:
+    def __build_results(self, package: Package, stdout: str, stderr: str) -> CompatibilityResult:
         """
         Process the output of the subprocess
         """
         results = CompatibilityResult(package)
 
-        if output == "":
+        # No Error
+        if stderr == "":
             results.message = "Package is compatible"
             results.compatible = True
 
-        elif "is not a main package" in output:
-            results.message = "Package is compatible"
-            results.compatible = True
+            if "is not a main package" in stdout:
+                results.message = "Package is compatible but not a main package"
+                results.compatible = True
+                results.error = stderr
 
-        elif "version must not be empty" in output:
-            results.message = "Package version is empty"
-            results.compatible = True
-
-        elif "missing dot in first path element" in output:
-            results.message = "Package path is malformed"
-            results.compatible = True
-
-        # If the version is not found : fatal error
-        elif "fatal error" in output:
-            # The pull encountered a fatal error
-            results.message = "The version of the package as not been found"
+        # Error
+        if stderr != "":
             results.compatible = False
-            results.error = output
+            results.error = stderr
 
-        # If it fails to find the correct path : unrecognized import path
-        elif "unrecognized import path" in output:
-            # The pull encountered a fatal error
-            results.message = "Unrecognized package import path"
-            results.compatible = False
-            results.error = output
+            if "version must not be empty" in stderr:
+                results.message = "Package version is empty"
 
-        # The link does not contain package
-        elif "does not contain package" in output:
-            results.message = "Link does not contain package"
-            results.compatible = False
-            results.error = output
+            elif "missing dot in first path element" in stderr:
+                results.message = "Package path is malformed"
 
-        # Regex success
-        else:
-            results.message = "No information"
-            results.compatible = False
-            results.error = output
+            # If the version is not found : fatal error
+            elif "fatal error" in stderr:
+                # The pull encountered a fatal error
+                results.message = "The version of the package as not been found"
+
+            # If it fails to find the correct path : unrecognized import path
+            elif "unrecognized import path" in stderr:
+                # The pull encountered a fatal error
+                results.message = "Unrecognized package import path"
+
+            # The link does not contain package
+            elif "does not contain package" in stderr:
+                results.message = "Link does not contain package"
+
+            # Regex success
+            else:
+                results.message = "Unknown error"
 
         # Package Name
         self.__logger.info(f"Package with name '{package.name}' as been flagged as '{results.compatible}'."
@@ -80,7 +77,7 @@ class GoPullEngine:
             p = subprocess.run(args, capture_output=True, text=True)
 
             self.__logger.info(f"Results for {' '.join(args)}. Captured output: {p.stdout} - Error: {p.stderr}")
-            return self.__build_results(package, p.stdout)
+            return self.__build_results(package, p.stdout, p.stderr)
         except Exception as e:
             self.__logger.error(f"Failed to pull the package: {package_name}")
             raise PackagePullError(str(e))
