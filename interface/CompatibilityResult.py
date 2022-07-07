@@ -27,6 +27,7 @@ class CompatibilityResult:
         Return a dictionary represent
         """
         return {
+            "message": self.message,
             "package": self.package.serialize(),
             "compatible": bool(self.compatible),
             "error": self.error
