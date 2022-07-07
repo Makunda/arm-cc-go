@@ -71,7 +71,7 @@ class GoPullEngine:
         Pull the go package
         """
         package_name = package.get_id()
-        args = ["go", "get", package_name]
+        args = ["go", "install", package_name]
 
         try:
             p = subprocess.run(args, capture_output=True, text=True)
