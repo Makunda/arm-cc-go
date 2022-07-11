@@ -89,3 +89,6 @@ if not mail_recipient_list:
 else:
     # Split the recipients address
     MAILER_RECIPIENTS = mail_recipient_list.split(",")
+
+
+PROCESS_TIMEOUT = int(os.getenv("PROCESS_TIMEOUT", 20))

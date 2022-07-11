@@ -5,6 +5,7 @@ from interface.CompatibilityResult import CompatibilityResult
 from interface.Package import Package
 from interface.go.GoPackage import GoPackage
 from logger.Logger import Logger
+from secrets.Secrets import PROCESS_TIMEOUT
 
 
 class GoPullEngine:
@@ -37,6 +38,9 @@ class GoPullEngine:
 
             if "version must not be empty" in stderr:
                 results.message = "Package version is empty"
+
+            elif "Process Timeout" in stderr:
+                results.message = "Process Timeout. This may indicate an unreachable or a private repository."
 
             elif "missing dot in first path element" in stderr:
                 results.message = "Package path is malformed"
@@ -74,10 +78,23 @@ class GoPullEngine:
         args = ["go", "install", package_name]
 
         try:
-            p = subprocess.run(args, capture_output=True, text=True)
+            proc = subprocess.Popen(args,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    shell=True)
+            stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
 
-            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {p.stdout} - Error: {p.stderr}")
-            return self.__build_results(package, p.stdout, p.stderr)
+            s_stdout = stdout.decode("utf-8")
+            s_stderr = stderr.decode("utf-8")
+
+            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {s_stdout} - Error: {s_stderr}")
+            return self.__build_results(package, s_stdout, s_stderr)
+        except subprocess.TimeoutExpired as e:
+            s_stdout = ""
+            s_stderr = "Process Timeout"
+            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {s_stdout} - Error: {s_stderr}")
+            return self.__build_results(package, s_stdout, s_stderr)
         except Exception as e:
             self.__logger.error(f"Failed to pull the package: {package_name}")
             raise PackagePullError(str(e))
