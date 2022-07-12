@@ -1,0 +1,1 @@
+cp ./arm-cc-go.service /etc/systemd/system/arm-cc-go.service
