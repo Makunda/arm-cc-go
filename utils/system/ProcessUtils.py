@@ -15,6 +15,7 @@ class ProcessUtils:
         Launch a new process using the command
         """
         return subprocess.Popen([command],
+                                shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
