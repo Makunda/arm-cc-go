@@ -5,13 +5,50 @@ from interface.CompatibilityResult import CompatibilityResult
 from interface.Package import Package
 from interface.go.GoPackage import GoPackage
 from logger.Logger import Logger
+from modules.ModuleSDK import ModuleSDK
 from secrets.Secrets import PROCESS_TIMEOUT
 
 
-class GoPullEngine:
+class GoSDK(ModuleSDK):
     """
         Engine in charge of the installation
     """
+
+    def wrapped_initialize(self):
+        pass
+
+    def get_name(self) -> str:
+        return "Go SDK"
+
+    def wrapped_pull_package(self, package: Package) -> CompatibilityResult:
+        """
+            Pull the go package
+            @params Package to pull
+        """
+        package_name = f"{package.name}@{package.version}"
+        args = [f"go install {package_name}"]
+
+        try:
+            proc = subprocess.Popen(args,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    shell=True)
+            stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
+
+            s_stdout = stdout.decode("utf-8")
+            s_stderr = stderr.decode("utf-8")
+
+            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {s_stdout} - Error: {s_stderr}")
+            return self.__build_results(package, s_stdout, s_stderr)
+        except subprocess.TimeoutExpired as e:
+            s_stdout = ""
+            s_stderr = "Process Timeout"
+            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {s_stdout} - Error: {s_stderr}")
+            return self.__build_results(package, s_stdout, s_stderr)
+        except Exception as e:
+            self.__logger.error(f"Failed to pull the package: {package_name}")
+            raise PackagePullError(str(e))
 
     __logger = Logger.get("Go Pull Engine")
 
@@ -69,32 +106,3 @@ class GoPullEngine:
 
         # Return the package
         return results
-
-    def pull_package(self, package: GoPackage) -> CompatibilityResult:
-        """
-        Pull the go package
-        """
-        package_name = package.get_id()
-        args = [f"go install {package_name}"]
-
-        try:
-            proc = subprocess.Popen(args,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    shell=True)
-            stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
-
-            s_stdout = stdout.decode("utf-8")
-            s_stderr = stderr.decode("utf-8")
-
-            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {s_stdout} - Error: {s_stderr}")
-            return self.__build_results(package, s_stdout, s_stderr)
-        except subprocess.TimeoutExpired as e:
-            s_stdout = ""
-            s_stderr = "Process Timeout"
-            self.__logger.info(f"Results for {' '.join(args)}. Captured output: {s_stdout} - Error: {s_stderr}")
-            return self.__build_results(package, s_stdout, s_stderr)
-        except Exception as e:
-            self.__logger.error(f"Failed to pull the package: {package_name}")
-            raise PackagePullError(str(e))

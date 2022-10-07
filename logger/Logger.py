@@ -8,7 +8,7 @@ from flask.logging import default_handler
 from logger.LoggerUtils import LoggerUtils
 from metaclass.SingletonMeta import SingletonMeta
 from secrets.Secrets import LOG_FOLDER, LOG_LEVEL, MODULE_NAME
-from utils.FolderUtils import FolderUtils
+from utils.system.FolderUtils import FolderUtils
 
 """
    Initialize logging and displays information

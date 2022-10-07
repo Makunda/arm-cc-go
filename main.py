@@ -39,7 +39,7 @@ def main():
 
     try:
         initializer = Initializer()
-        initializer.hail_mary()
+        initializer.initialize()
         main_logger.info(f"{MODULE_NAME} has been properly initialized.")
     except Exception as e:
         main_logger.error(f"Failed to initialize the module", e)

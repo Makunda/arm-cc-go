@@ -8,7 +8,7 @@ from mailer.Email import Email
 from metaclass.SingletonMeta import SingletonMeta
 from secrets.Secrets import MAILER_ACTIVATION, MODULE_NAME, MAILER_RECIPIENTS, MAILER_USER, MAILER_HOSTNAME, \
     MAILER_PORT, MAILER_PASSWORD
-from utils.InternetUtils import InternetUtils
+from utils.internet.InternetUtils import InternetUtils
 
 
 class Mailer(metaclass=SingletonMeta):

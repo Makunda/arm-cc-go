@@ -5,6 +5,7 @@ from codes.ExitCodes import ExitCodes
 from logger.Logger import Logger
 from machine.PlatformChecker import PlatformChecker
 from machine.enum.OperatingSystem import OperatingSystem
+from modules.ModuleDispatcher import ModuleDispatcher
 
 
 class Initializer:
@@ -14,46 +15,11 @@ class Initializer:
     __logger = Logger.get("Initializer")
     __platform: OperatingSystem = PlatformChecker.get_platform()
 
-    # Verify Go is installed
-    def verify_installed(self) -> bool:
+    def initialize(self):
         """
-        Verify if the utility is installed
-        :return:
+        Initialize the module dispatcher
         """
-        try:
-            if self.__platform == OperatingSystem.WINDOWS:
-                p = subprocess.run(["go.exe", "version"], shell=True, capture_output=True, text=True)
-            else:
-                p = subprocess.run(["go", "version"], capture_output=True, text=True)
-
-            stdout = str(p.stdout).replace("go version ", "")
-            self.__logger.info(f"Version of GO detected: {stdout}")
-            return True
-        except Exception as e:
-            self.__logger.error("GoLang is not installed on this computer.")
-            self.__logger.error("You need to install GoLang to run this module. The program will now exit")
-            self.__logger.error("Exception", e)
-            sys.exit(ExitCodes.GOLANG_NOT_INSTALLED)
-            # The program stops here 
-
-    # Pull test
-    def pull_test(self) -> bool:
-        """
-        Pull the repository
-        :return:
-        """
-        pass
-
-    def hail_mary(self):
-        """
-        Test all the cases
-        :return: None
-        """
-        # Verify Go is installed or quit
-        self.verify_installed()
-
-        # Try to pull a dummy dependency
-        self.pull_test()
+        module_dispatcher = ModuleDispatcher()
 
     def __init__(self):
         """

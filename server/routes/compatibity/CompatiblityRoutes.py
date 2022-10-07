@@ -2,17 +2,17 @@ from flask import request
 
 from interface.go.GoPackage import GoPackage
 from logger.Logger import Logger
-from pull.GoPullEngine import GoPullEngine
+from modules.ModuleDispatcher import ModuleDispatcher
 from server import app
 from server.interfaces.ApiResponse import ApiResponse
 from server.middlewares import token_required
 
-goPullEngine = GoPullEngine()
+dispatcher = ModuleDispatcher()
 __logger = Logger.get("GoRoutes")
 
-@app.route('/go/check', methods=['POST'])
+@app.route('/check/<language>', methods=['POST'])
 @token_required
-def go_check():
+def go_check(language:str):
     """
        Check the compatibility of a Go package
     """
@@ -28,13 +28,17 @@ def go_check():
         # Malformed request
         return ApiResponse("Malformed request", None, ["Missing 'version' field."]).build()
 
+    if not dispatcher.is_language_supported(language):
+        # Malformed request
+        return ApiResponse("Malformed request", None, [f"Incompatible '{language}' language."]).build()
+
     origin = ""
     if "origin" in data:
         # The package has a specific origin to try
         origin = data["origin"]
 
     package = GoPackage(data["name"], data["version"], str(origin))
-    compatibility = goPullEngine.pull_package(package)
+    compatibility = dispatcher.analyze(language, package)
 
     __logger.info(f"Package: {package.name} - Compatibility {compatibility.compatible}")
 

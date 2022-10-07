@@ -20,5 +20,5 @@ def index():
 def index_auth():
     return ApiResponse("Health Check", {"Running": True, "Authenticated": True}, []).build()
 
-
-import server.routes.go.GoRoutes
+# Declare routes
+import server.routes.compatibity.CompatiblityRoutes
