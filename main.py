@@ -51,7 +51,7 @@ def main():
         main_logger.info("Starting the web server.")
         from server import app
 
-        app.run(SERVER_HOST, port=SERVER_PORT)
+        app.run(SERVER_HOST, port=SERVER_PORT, ssl_context='adhoc')
     except Exception as e:
         main_logger.error(f"Failed to start the web server.", e)
         sys.exit(ExitCodes.MODULE_INITIALIZATION_FAILED)
