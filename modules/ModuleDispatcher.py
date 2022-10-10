@@ -47,11 +47,11 @@ class ModuleDispatcher(metaclass=SingletonMeta):
         """
         return [str(x.value) for x in self.__sdk_map.keys()]
 
-    def is_language_supported(self, language: str) -> bool:
+    def is_language_implemented(self, language: Language) -> bool:
         """
         Verify that a language is supported
         """
-        return language in self.get_defined_languages()
+        return language in self.__sdk_map.keys()
 
     def analyze(self, language: Language, package: Package) -> CompatibilityResult:
         """

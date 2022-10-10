@@ -13,9 +13,10 @@ from server.middlewares import token_required
 dispatcher = ModuleDispatcher()
 __logger = Logger.get("GoRoutes")
 
+
 @app.route('/check/<language>', methods=['POST'])
 @token_required
-def package_check(language:str):
+def package_check(language: str):
     """
        Check the compatibility of a Go package
     """
@@ -31,8 +32,11 @@ def package_check(language:str):
         # Malformed request
         return ApiResponse("Malformed request", None, ["Missing 'version' field."]).build()
 
-    if not dispatcher.is_language_supported(language):
-        # Malformed request
+    try:
+        language_enum = Language.from_str(language)
+        if not dispatcher.is_language_implemented(language_enum):
+            raise KeyError
+    except:
         return ApiResponse("Malformed request", None, [f"Incompatible '{language}' language."]).build()
 
     origin = ""
@@ -47,7 +51,7 @@ def package_check(language:str):
         return ApiResponse("Compatibility result", None, ["Invalid package data sent"], 400).build()
 
     try:
-        compatibility = dispatcher.analyze(Language.from_str(language), package)
+        compatibility = dispatcher.analyze(language_enum, package)
         __logger.info(f"Package: {package.name} - Compatibility {compatibility.compatible}")
         return ApiResponse("Compatibility result", compatibility.serialize(), []).build()
     except Exception as e:

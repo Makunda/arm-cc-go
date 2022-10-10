@@ -10,6 +10,6 @@ class Language(Enum):
         if label == str(Language.DOTNET.value):
             return Language.DOTNET
         if label == str(Language.GO.value):
-            return Language.DOTNET
+            return Language.GO
         else:
             raise NotImplementedError(f"Incompatible language [{label}]")
