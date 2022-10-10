@@ -15,7 +15,7 @@ __logger = Logger.get("GoRoutes")
 
 @app.route('/check/<language>', methods=['POST'])
 @token_required
-def go_check(language:str):
+def package_check(language:str):
     """
        Check the compatibility of a Go package
     """

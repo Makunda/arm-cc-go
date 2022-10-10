@@ -73,6 +73,8 @@ class DotNetSDK(ModuleSDK):
             message = str(CompatibilityStatus.UNKNOWN.value)
             compatible = False
             error = "Check server's logs for more details."
-            self.__logger.error(f"{package.to_string()} pulled failed. Error: {ProcessUtils.get_error_block(process)}")
+            self.__logger.error(f"{package.to_string()} pulled failed. "
+                                f"Output: {ProcessUtils.get_output(process)}. "
+                                f"Error: {ProcessUtils.get_error_block(process)}")
 
         return CompatibilityResult(package, str(message), compatible, error)
