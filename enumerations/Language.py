@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Language(Enum):
-    GO = "golang",
+    GO = "golang"
     DOTNET = "dotnet"
 
     @staticmethod
