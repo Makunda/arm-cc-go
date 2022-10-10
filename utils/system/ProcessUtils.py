@@ -18,7 +18,7 @@ class ProcessUtils:
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
+                                stderr=subprocess.PIPE,
                                 universal_newlines=True,
                                 cwd=cwd,
                                 bufsize=0)
