@@ -16,7 +16,7 @@ class ModuleDispatcher(metaclass=SingletonMeta):
         Module dispatcher
     """
     __logger = Logger.get("Module SDK Dispatcher")
-    __sdk_map: Dict[str, ModuleSDK] = {}
+    __sdk_map: Dict[Language, ModuleSDK] = {}
 
     def __init__(self):
         """
@@ -31,6 +31,9 @@ class ModuleDispatcher(metaclass=SingletonMeta):
             self.__logger.error("Failed to initialize the SDK map.", e)
             raise e
 
+        keys = self.__sdk_map.keys()
+        self.__logger.info(f"Supported languages: {keys}")
+
         for key in self.__sdk_map.keys():
             name = self.__sdk_map[key].get_name()
             try:
@@ -42,7 +45,7 @@ class ModuleDispatcher(metaclass=SingletonMeta):
         """
         Return the list of defined languages
         """
-        return list(self.__sdk_map.keys())
+        return [str(x.value) for x in self.__sdk_map.keys()]
 
     def is_language_supported(self, language: str) -> bool:
         """
@@ -50,11 +53,11 @@ class ModuleDispatcher(metaclass=SingletonMeta):
         """
         return language in self.get_defined_languages()
 
-    def analyze(self, language: str, package: Package) -> CompatibilityResult:
+    def analyze(self, language: Language, package: Package) -> CompatibilityResult:
         """
         Analyze a package and return the compatibility results
         """
         if language in self.__sdk_map.keys():
             return self.__sdk_map[language].pull_package(package)
         else:
-            return CompatibilityResult(package, CompatibilityStatus.LANGUAGE_NOT_SUPPORTED, False)
+            return CompatibilityResult(package, str(CompatibilityStatus.LANGUAGE_NOT_SUPPORTED.value), False)

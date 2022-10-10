@@ -1,5 +1,8 @@
 from flask import request
 
+from codes.HttpCodes import HttpStatus
+from enumerations.Language import Language
+from interface.Package import Package
 from interface.go.GoPackage import GoPackage
 from logger.Logger import Logger
 from modules.ModuleDispatcher import ModuleDispatcher
@@ -37,9 +40,16 @@ def go_check(language:str):
         # The package has a specific origin to try
         origin = data["origin"]
 
-    package = GoPackage(data["name"], data["version"], str(origin))
-    compatibility = dispatcher.analyze(language, package)
+    try:
+        package = Package(data["name"], data["version"], str(origin))
+    except Exception as e:
+        __logger.info(f"Failed to build the package", e)
+        return ApiResponse("Compatibility result", None, ["Invalid package data sent"], 400).build()
 
-    __logger.info(f"Package: {package.name} - Compatibility {compatibility.compatible}")
-
-    return ApiResponse("Compatibility result", compatibility.serialize(), []).build()
+    try:
+        compatibility = dispatcher.analyze(Language.from_str(language), package)
+        __logger.info(f"Package: {package.name} - Compatibility {compatibility.compatible}")
+        return ApiResponse("Compatibility result", compatibility.serialize(), []).build()
+    except Exception as e:
+        __logger.info(f"Failed to get the compatibility of package", e)
+        return ApiResponse("Compatibility result", None, ["Invalid language"], 400).build()
