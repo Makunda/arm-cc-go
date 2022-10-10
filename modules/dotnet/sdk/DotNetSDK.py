@@ -45,34 +45,34 @@ class DotNetSDK(ModuleSDK):
         packet_version_not_found = f"Unable to find package {package.name} with version"
 
         # Compatibility result declaration
-        message = ""
-        compatible = False
-        error = ""
+        message: str = ""
+        compatible: bool = False
+        error: str = ""
 
         if ProcessUtils.output_contains(process, packet_added):
-            message = CompatibilityStatus.COMPATIBLE
+            message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = True
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
         elif ProcessUtils.output_contains(process, packet_updated):
             # Updated package
-            message = CompatibilityStatus.COMPATIBLE
+            message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = True
             self.__logger.info(f"{package.to_string()} has been updated in the project.")
         elif ProcessUtils.output_contains(process, packet_not_found):
             # Incompatible package
-            message = CompatibilityStatus.NON_COMPATIBLE
+            message = str(CompatibilityStatus.NON_COMPATIBLE.value)
             compatible = False
             error = f"{package.to_string()} does not exist for this architecture."
             self.__logger.error(f"{package.to_string()} does not exist for this architecture.")
         elif ProcessUtils.output_contains(process, packet_version_not_found):
-            message = CompatibilityStatus.VERSION_NON_COMPATIBLE
+            message = str(CompatibilityStatus.VERSION_NON_COMPATIBLE.value)
             compatible = False
             error = f"{package.to_string()} does not exist in this version."
             self.__logger.error(f"{package.to_string()} does not exist in this version.")
         else:
-            message = CompatibilityStatus.UNKNOWN
+            message = str(CompatibilityStatus.UNKNOWN.value)
             compatible = True
             error = ProcessUtils.get_output(process)
             self.__logger.error(f"{package.to_string()} failed to ")
 
-        return CompatibilityResult(package, message, compatible, error)
+        return CompatibilityResult(package, str(message), compatible, error)

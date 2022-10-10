@@ -22,4 +22,4 @@ class Package:
         }
 
     def to_string(self) -> str:
-        return f"Package [name={self.name}, version={self.version}, origin={self.to_string()}]"
+        return f"Package [name={self.name}, version={self.version}, origin={self.origin}]"
