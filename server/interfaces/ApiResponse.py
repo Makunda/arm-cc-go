@@ -47,7 +47,7 @@ class ApiResponse:
 
         # Apply code
         if code is not None:
-            self.code = int(code.value)
+            self.code = int(code)
         elif len(self.errors) == 0:
             self.code = HTTPStatus.OK
         else:

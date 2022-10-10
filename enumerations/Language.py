@@ -6,8 +6,10 @@ class Language(Enum):
     DOTNET = "dotnet"
 
     @staticmethod
-    def from_str(label: str):
-        if label in [x.value for x in Language]:
-            return Language[label]
+    def from_str(label: str) -> 'Language':
+        if label == str(Language.DOTNET.value):
+            return Language.DOTNET
+        if label == str(Language.GO.value):
+            return Language.DOTNET
         else:
             raise NotImplementedError(f"Incompatible language [{label}]")
