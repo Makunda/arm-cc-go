@@ -37,6 +37,8 @@ def package_check(language: str):
         if not dispatcher.is_language_implemented(language_enum):
             raise KeyError
     except:
+        __logger.info(f"Language: '{language}' has not been recognized or is not compatible with"
+                      f" [{', '.join(dispatcher.get_languages_implemented())}]")
         return ApiResponse("Malformed request", None, [f"Incompatible '{language}' language."]).build()
 
     origin = ""

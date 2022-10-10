@@ -53,6 +53,12 @@ class ModuleDispatcher(metaclass=SingletonMeta):
         """
         return language in self.__sdk_map.keys()
 
+    def get_languages_implemented(self) -> List[str]:
+        """
+        Verify that a language is supported
+        """
+        return list([str(x.value) for x in self.__sdk_map.keys()])
+
     def analyze(self, language: Language, package: Package) -> CompatibilityResult:
         """
         Analyze a package and return the compatibility results
