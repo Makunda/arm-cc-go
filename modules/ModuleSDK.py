@@ -42,4 +42,4 @@ class ModuleSDK(abc.ABC):
         if not self.is_active():
             raise ModuleInitializationError(self.get_name())
         else:
-            return self.wrapped_pull_package()
+            return self.wrapped_pull_package(package)
