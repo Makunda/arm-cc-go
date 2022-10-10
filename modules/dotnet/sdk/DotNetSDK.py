@@ -71,8 +71,8 @@ class DotNetSDK(ModuleSDK):
             self.__logger.error(f"{package.to_string()} does not exist in this version.")
         else:
             message = str(CompatibilityStatus.UNKNOWN.value)
-            compatible = True
-            error = ProcessUtils.get_output(process)
-            self.__logger.error(f"{package.to_string()} failed to ")
+            compatible = False
+            error = "Check server's logs for more details."
+            self.__logger.error(f"{package.to_string()} pulled failed. Error: {ProcessUtils.get_error_block(process)}")
 
         return CompatibilityResult(package, str(message), compatible, error)
