@@ -49,7 +49,7 @@ class DotNetSDK(ModuleSDK):
                                 stderr=subprocess.PIPE,
                                 cwd=self._project_path,
                                 shell=True)
-        stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
+        stdout, stderr = proc.communicate(timeout=20)
 
         s_stdout = stdout.decode("utf-8")
         s_stderr = stderr.decode("utf-8")
