@@ -25,6 +25,7 @@ class GoSDK(ModuleSDK):
             Pull the go package
             @params Package to pull
         """
+
         package_name = f"{package.name}@{package.version}"
         args = [f"go install {package_name}"]
 
@@ -84,6 +85,10 @@ class GoSDK(ModuleSDK):
 
             # If the version is not found : fatal error
             elif "fatal error" in stderr:
+                # The pull encountered a fatal error
+                results.message = "The version of the package as not been found"
+
+            elif "is not a main package" in stderr:
                 # The pull encountered a fatal error
                 results.message = "The version of the package as not been found"
 

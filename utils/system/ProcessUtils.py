@@ -14,7 +14,7 @@ class ProcessUtils:
         """
         Launch a new process using the command
         """
-        return subprocess.Popen([command],
+        proc = subprocess.Popen([command],
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
@@ -22,6 +22,11 @@ class ProcessUtils:
                                 universal_newlines=True,
                                 cwd=cwd,
                                 bufsize=0)
+        stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
+
+        proc.stdout = stdout.decode("utf-8")
+        proc.stderr = stderr.decode("utf-8")
+
 
     @staticmethod
     def get_output(popen: subprocess.Popen) -> str:

@@ -1,9 +1,12 @@
+import subprocess
+
 from definitions import DOTNET_DIR
 from enumerations.CompatibiltyStatus import CompatibilityStatus
 from interface.CompatibilityResult import CompatibilityResult
 from interface.Package import Package
 from logger.Logger import Logger
 from modules.ModuleSDK import ModuleSDK
+from secrets.Secrets import PROCESS_TIMEOUT
 from utils.system.PathUtils import PathUtils
 from utils.system.ProcessUtils import ProcessUtils
 
@@ -30,6 +33,8 @@ class DotNetSDK(ModuleSDK):
 
         try:
             ProcessUtils.execute("dotnet new console", self._project_path)
+            self.__logger.info(f"New dotnet project created at {self._project_path}.")
+
         except Exception as e:
             self.__logger.error(f"Failed to create the dotnet project.")
             raise e
@@ -37,6 +42,20 @@ class DotNetSDK(ModuleSDK):
     def wrapped_pull_package(self, package: Package) -> CompatibilityResult:
         command = f"dotnet add package {package.name} --version {package.version}"
         process = ProcessUtils.execute(command, self._project_path)
+
+        proc = subprocess.Popen(command,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                cwd=self._project_path,
+                                shell=True)
+        stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
+
+        s_stdout = stdout.decode("utf-8")
+        s_stderr = stderr.decode("utf-8")
+
+        print("DotNetSDK Pull results (s_stdout):", s_stdout)
+        print("DotNetSDK Pull results (s_stderr):", s_stderr)
 
         # Valid output
         packet_added = f"PackageReference for package '{package.name}' version '{package.version}' added to file"
@@ -49,22 +68,22 @@ class DotNetSDK(ModuleSDK):
         compatible: bool = False
         error: str = ""
 
-        if ProcessUtils.output_contains(process, packet_added):
+        if  packet_added in s_stdout:
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = True
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
-        elif ProcessUtils.output_contains(process, packet_updated):
+        elif packet_updated in s_stdout:
             # Updated package
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = True
             self.__logger.info(f"{package.to_string()} has been updated in the project.")
-        elif ProcessUtils.output_contains(process, packet_not_found):
+        elif packet_not_found in s_stderr:
             # Incompatible package
             message = str(CompatibilityStatus.NON_COMPATIBLE.value)
             compatible = False
             error = f"{package.to_string()} does not exist for this architecture."
             self.__logger.error(f"{package.to_string()} does not exist for this architecture.")
-        elif ProcessUtils.output_contains(process, packet_version_not_found):
+        elif packet_version_not_found in s_stderr:
             message = str(CompatibilityStatus.VERSION_NON_COMPATIBLE.value)
             compatible = False
             error = f"{package.to_string()} does not exist in this version."
@@ -74,7 +93,7 @@ class DotNetSDK(ModuleSDK):
             compatible = False
             error = "Check server's logs for more details."
             self.__logger.error(f"{package.to_string()} pulled failed. "
-                                f"Output: {ProcessUtils.get_output(process)}. "
-                                f"Error: {ProcessUtils.get_error_block(process)}")
+                                f"Output: {s_stdout}. "
+                                f"Error: {s_stderr}")
 
         return CompatibilityResult(package, str(message), compatible, error)
