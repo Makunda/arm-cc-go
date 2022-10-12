@@ -1,6 +1,7 @@
 import re
 import subprocess
 
+from secrets.Secrets import PROCESS_TIMEOUT
 from utils.object.StringUtils import StringUtils
 
 
@@ -14,7 +15,7 @@ class ProcessUtils:
         """
         Launch a new process using the command
         """
-        proc = subprocess.Popen([command],
+        return subprocess.Popen([command],
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
@@ -22,11 +23,6 @@ class ProcessUtils:
                                 universal_newlines=True,
                                 cwd=cwd,
                                 bufsize=0)
-        stdout, stderr = proc.communicate(timeout=PROCESS_TIMEOUT)
-
-        proc.stdout = stdout.decode("utf-8")
-        proc.stderr = stderr.decode("utf-8")
-
 
     @staticmethod
     def get_output(popen: subprocess.Popen) -> str:

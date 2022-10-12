@@ -41,7 +41,6 @@ class DotNetSDK(ModuleSDK):
 
     def wrapped_pull_package(self, package: Package) -> CompatibilityResult:
         command = f"dotnet add package {package.name} --version {package.version}"
-        process = ProcessUtils.execute(command, self._project_path)
 
         proc = subprocess.Popen(command,
                                 stdin=subprocess.PIPE,
