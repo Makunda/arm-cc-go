@@ -53,9 +53,6 @@ class DotNetSDK(ModuleSDK):
         s_stdout = stdout.decode("utf-8")
         s_stderr = stderr.decode("utf-8")
 
-        print("DotNetSDK Pull results (s_stdout):", s_stdout)
-        print("DotNetSDK Pull results (s_stderr):", s_stderr)
-
         # Valid output
         packet_added = f"PackageReference for package '{package.name}' version '{package.version}' added to file"
         packet_updated = f"PackageReference for package '{package.name}' version '{package.version}' updated in file"
