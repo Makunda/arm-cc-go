@@ -45,9 +45,9 @@ if TEMP_FOLDER is None:
         os.makedirs(temp_folder)
     TEMP_FOLDER = str(temp_folder)
 
-DAEMON_FILE = TEMP_FOLDER + "daemon-example.pid"
-STD_OUT_FILE = LOG_FOLDER + "daemon-out.log"
-STD_ERR_FILE = LOG_FOLDER + "daemon-error.log"
+DAEMON_FILE = TEMP_FOLDER + "/daemon-example.pid"
+STD_OUT_FILE = LOG_FOLDER + "/daemon-out.log"
+STD_ERR_FILE = LOG_FOLDER + "/daemon-error.log"
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 

@@ -5,27 +5,28 @@ from Daemon import Daemon
 from secrets.Secrets import DAEMON_FILE
 
 
-class MyDaemon(Daemon):
-    def run(self):
-        while True:
-            time.sleep(1)
-
-
 if __name__ == "__main__":
-    daemon = MyDaemon(DAEMON_FILE)
+    daemon = Daemon()
+    usageMessage = f"Usage: {sys.argv[0]} (start|stop|restart|status|reload|version)"
     if len(sys.argv) == 2:
-        if 'start' == sys.argv[1]:
+        choice = sys.argv[1]
+        if choice == "start":
             daemon.start()
-        elif 'stop' == sys.argv[1]:
+        elif choice == "stop":
             daemon.stop()
-        elif 'restart' == sys.argv[1]:
+        elif choice == "restart":
             daemon.restart()
-        elif 'run' == sys.argv[1]:
-            daemon.run()
+        elif choice == "status":
+            daemon.status()
+        elif choice == "reload":
+            daemon.reload()
+        elif choice == "version":
+            daemon.version()
         else:
-            print(f"Unknown command: {sys.argv}")
-            sys.exit(2)
+            print("Unknown command.")
+            print(usageMessage)
+            sys.exit(1)
         sys.exit(0)
     else:
-        print("usage: %s start|stop|restart|run" % sys.argv[0])
-        sys.exit(2)
+        print(usageMessage)
+        sys.exit(1)
