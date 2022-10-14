@@ -151,6 +151,7 @@ class Daemon(object):
             except:
                 message = "Failed to get the status of daemon with PID [%s].\n"
                 sys.stderr.write(message % pid)
+                self.delpid()
                 return  # not an error in a restart
 
     def reload(self):
@@ -192,7 +193,7 @@ class Daemon(object):
             err = str(err)
             if err.find("No such process") > 0:
                 if os.path.exists(self.pidfile):
-                    os.remove(self.pidfile)
+                    self.delpid()
             else:
                 print(f"Failed to kill the daemon process: {str(err)}")
                 sys.exit(1)
