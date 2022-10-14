@@ -21,7 +21,7 @@ if __name__ == "__main__":
         elif 'restart' == sys.argv[1]:
             daemon.restart()
         elif 'run' == sys.argv[1]:
-            daemon.restart()
+            daemon.run()
         else:
             print(f"Unknown command: {sys.argv}")
             sys.exit(2)

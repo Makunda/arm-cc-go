@@ -14,7 +14,7 @@ class Daemon:
     A generic daemon class.
 
     Usage: subclass the Daemon class and override the run() method
-    http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+    https://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
     """
 
     def __init__(self, pidfile, stdin='/dev/null', stdout=STD_OUT_FILE, stderr=STD_ERR_FILE):
@@ -148,6 +148,9 @@ class Daemon:
             return
 
         # If not already running launch the thread
-        self.server_thread = threading.Thread(target=Server.run, args=(1,))
-        self.running = True
+        try:
+            self.running = True
+            Server.run()
+        except Exception as e:
+            self.running = False
 
