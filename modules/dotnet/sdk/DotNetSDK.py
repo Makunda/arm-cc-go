@@ -1,6 +1,6 @@
 import subprocess
 
-from definitions import DOTNET_DIR
+from Definitions import DOTNET_DIR
 from enumerations.CompatibiltyStatus import CompatibilityStatus
 from interface.CompatibilityResult import CompatibilityResult
 from interface.Package import Package

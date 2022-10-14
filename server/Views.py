@@ -5,7 +5,7 @@ from server.interfaces.ApiResponse import ApiResponse
 ######################################################
 #                    Variables                       #
 ######################################################
-from server.middlewares import token_required
+from server.Middlewares import token_required
 
 __logger = Logger.get("Server Views")
 

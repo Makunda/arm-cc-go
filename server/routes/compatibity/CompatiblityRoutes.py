@@ -8,7 +8,7 @@ from logger.Logger import Logger
 from modules.ModuleDispatcher import ModuleDispatcher
 from server import app
 from server.interfaces.ApiResponse import ApiResponse
-from server.middlewares import token_required
+from server.Middlewares import token_required
 
 dispatcher = ModuleDispatcher()
 __logger = Logger.get("GoRoutes")
