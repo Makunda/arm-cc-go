@@ -93,6 +93,9 @@ class Daemon:
             sys.stderr.write(message % self.pidfile)
             sys.exit(1)
 
+        # Display daemon
+        print(f"Starting daemon with pid [{pid}]")
+
         # Start the daemon
         self.daemonize()
         self.run()
