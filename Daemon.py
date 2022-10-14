@@ -86,6 +86,7 @@ class Daemon(object):
 
     def delpid(self):
         os.remove(self.pidfile)
+
     def _getProces(self):
         procs = []
         for p in psutil.process_iter():
@@ -130,14 +131,19 @@ class Daemon(object):
         """
         Get status of the daemon.
         """
-        procs = self._getProces()
-        if procs:
-            pids = ",".join([str(p.pid) for p in procs])
-            m = f"The daemon is running with PID {pids}."
-            print(m)
-        else:
-            m = "The daemon is not running!"
-            print(m)
+        # Get the pid from the pidfile
+        try:
+            with open(self.pidfile, 'r') as pf:
+                pid = int(pf.read().strip())
+                message = "Daemon is running with PID [%s].\n"
+                sys.stdout.write(message % pid)
+        except IOError:
+            pid = None
+
+        if not pid:
+            message = "pidfile %s does not exist. Daemon is not running.\n"
+            sys.stderr.write(message % self.pidfile)
+            return  # not an error in a restart
 
     def reload(self):
         """
@@ -182,6 +188,7 @@ class Daemon(object):
             else:
                 print(f"Failed to kill the daemon process: {str(err)}")
                 sys.exit(1)
+
     def restart(self):
         """
         Restart the daemon.
