@@ -18,7 +18,7 @@ class Daemon(object):
            - you can receive reload signal from self.isReloadSignal, and then you have to set back self.isReloadSignal = False
     """
 
-    def __init__(self, stdin='/dev/null', stdout=STD_OUT_FILE, stderr=STD_ERR_FILE):
+    def __init__(self, pidfile, stdin='/dev/null', stdout=STD_OUT_FILE, stderr=STD_ERR_FILE):
         self.ver = 1.0  # version
         self.pauseRunLoop = 0  # 0 means none pause between the calling of run() method.
         self.restartPause = 1  # 0 means without a pause between stop and start during the restart of the daemon
@@ -29,6 +29,7 @@ class Daemon(object):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
+        self.pidfile = pidfile
 
     def _sigterm_handler(self, signum, frame):
         self._canDaemonRun = False
@@ -71,6 +72,7 @@ class Daemon(object):
         # Redirect standard file descriptors.
         sys.stdout.flush()
         sys.stderr.flush()
+
         si = open(self.stdin, 'r')
         so = open(self.stdout, 'a+')
         se = open(self.stderr, 'a+')
@@ -78,6 +80,12 @@ class Daemon(object):
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
+        pid = str(os.getpid())
+        with open(self.pidfile, 'w+') as pid_file:
+            pid_file.write("%s\n" % pid)
+
+    def delpid(self):
+        os.remove(self.pidfile)
     def _getProces(self):
         procs = []
         for p in psutil.process_iter():
@@ -96,15 +104,19 @@ class Daemon(object):
         signal.signal(signal.SIGTERM, self._sigterm_handler)
         signal.signal(signal.SIGHUP, self._reload_handler)
         # Check if the daemon is already running.
-        procs = self._getProces()
-        if procs:
-            pids = ",".join([str(p.pid) for p in procs])
-            m = f"Find a previous daemon processes with PIDs {pids}. Is not already the daemon running?"
-            print(m)
+        # Check for a pidfile to see if the daemon already runs
+        try:
+            pf = open(self.pidfile, 'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if pid:
+            message = "pidfile %s already exist. Daemon already running?\n"
+            sys.stderr.write(message % self.pidfile)
             sys.exit(1)
-        else:
-            m = f"Start the daemon version {self.ver}"
-            print(m)
+
         # Daemonize the main process
         self._makeDaemon()
         # Start a infinitive loop that periodically runs run() method
@@ -143,26 +155,33 @@ class Daemon(object):
 
     def stop(self):
         """
-        Stop the daemon.
+        Stop the daemon
         """
-        procs = self._getProces()
+        # Get the pid from the pidfile
+        try:
+            with open(self.pidfile, 'r') as pf:
+                pid = int(pf.read().strip())
+        except IOError:
+            pid = None
 
-        def on_terminate(process):
-            m = f"The daemon process with PID {process.pid} has ended correctly."
-            print(m)
+        if not pid:
+            message = "pidfile %s does not exist. Daemon not running?\n"
+            sys.stderr.write(message % self.pidfile)
+            return  # not an error in a restart
 
-        if procs:
-            for p in procs:
-                p.terminate()
-            gone, alive = psutil.wait_procs(procs, timeout=self.waitToHardKill, callback=on_terminate)
-            for p in alive:
-                m = f"The daemon process with PID {p.pid} was killed with SIGTERM!"
-                print(m)
-                p.kill()
-        else:
-            m = "Cannot find some daemon process, I will do nothing."
-            print(m)
-
+        # Try killing the daemon process
+        try:
+            while 1:
+                os.kill(pid, SIGTERM)
+                time.sleep(0.1)
+        except OSError as err:
+            err = str(err)
+            if err.find("No such process") > 0:
+                if os.path.exists(self.pidfile):
+                    os.remove(self.pidfile)
+            else:
+                print(f"Failed to kill the daemon process: {str(err)}")
+                sys.exit(1)
     def restart(self):
         """
         Restart the daemon.
