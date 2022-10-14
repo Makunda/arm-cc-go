@@ -6,6 +6,8 @@ import sys, os, time, atexit
 from signal import SIGTERM
 from typing import IO
 
+from secrets.Secrets import STD_OUT_FILE, STD_ERR_FILE
+
 
 class Daemon:
     """
@@ -15,7 +17,7 @@ class Daemon:
     http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
     """
 
-    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    def __init__(self, pidfile, stdin='/dev/null', stdout=STD_OUT_FILE, stderr=STD_ERR_FILE):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
@@ -148,3 +150,4 @@ class Daemon:
         # If not already running launch the thread
         self.server_thread = threading.Thread(target=Server.run, args=(1,))
         self.running = True
+

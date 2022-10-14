@@ -38,6 +38,17 @@ if LOG_FOLDER is None:
         os.makedirs(log_path)
     LOG_FOLDER = str(log_path)
 
+TEMP_FOLDER = os.getenv('TEMP_FOLDER', None)
+if TEMP_FOLDER is None:
+    temp_folder = Path.home().joinpath(f'{MODULE_NAME}/tmp/')
+    if not temp_folder.exists():
+        os.makedirs(temp_folder)
+    TEMP_FOLDER = str(temp_folder)
+
+DAEMON_FILE = TEMP_FOLDER + "daemon-example.pid"
+STD_OUT_FILE = LOG_FOLDER + "daemon-out.log"
+STD_ERR_FILE = LOG_FOLDER + "daemon-error.log"
+
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 
 ##########################################################
