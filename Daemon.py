@@ -185,10 +185,16 @@ class Daemon(object):
             return  # not an error in a restart
 
         # Try killing the daemon process
+        num_try = 0
         try:
             while 1:
-                os.kill(pid, SIGTERM)
+                if num_try > 10:
+                    print(f"Failed to kill the daemon process. Maximum retries exceed.")
+                    sys.exit(1)
+                os.kill(pid, signal.SIGKILL)
                 time.sleep(0.1)
+                num_try += 1
+
         except OSError as err:
             err = str(err)
             if err.find("No such process") > 0:
