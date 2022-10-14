@@ -135,8 +135,7 @@ class Daemon(object):
         try:
             with open(self.pidfile, 'r') as pf:
                 pid = int(pf.read().strip())
-                message = "Daemon is running with PID [%s].\n"
-                sys.stdout.write(message % pid)
+
         except IOError:
             pid = None
 
@@ -144,6 +143,15 @@ class Daemon(object):
             message = "pidfile %s does not exist. Daemon is not running.\n"
             sys.stderr.write(message % self.pidfile)
             return  # not an error in a restart
+        else:
+            try:
+                proc = psutil.Process(pid)
+                message = "Daemon is in %s mode with PID [%s].\n"
+                sys.stdout.write(message % (str(proc.status()), pid))
+            except:
+                message = "Failed to get the status of daemon with PID [%s].\n"
+                sys.stderr.write(message % pid)
+                return  # not an error in a restart
 
     def reload(self):
         """
