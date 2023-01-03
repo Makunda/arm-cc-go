@@ -70,6 +70,14 @@ class DotNetSDK(ModuleSDK):
         compatible: Compatibility = Compatibility.UNKNOWN
         error: str = ""
 
+        print("Debug")
+        print("stdout", s_stdout)
+        print("stderr", s_stderr)
+        print("")
+        print("re_package_compatible", re_package_compatible)
+        print("re_package_incompatible", re_package_incompatible)
+        print("re_package_partially_compatible", re_package_partially_compatible)
+
         if bool(re_package_compatible.search(s_stdout)):
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = Compatibility.COMPATIBLE
