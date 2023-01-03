@@ -9,7 +9,6 @@ from logger.LoggerUtils import LoggerUtils
 from metaclass.SingletonMeta import SingletonMeta
 from secrets.Secrets import LOG_FOLDER, LOG_LEVEL, MODULE_NAME
 from utils.system.FolderUtils import FolderUtils
-from systemd.journal import JournaldLogHandler
 
 """
    Initialize logging and displays information
@@ -55,6 +54,7 @@ except Exception as e:
 
 # System D
 try:
+    from systemd.journal import JournaldLogHandler
     journald_handler = JournaldLogHandler()
 except Exception as e:
     print("Failed to create the System D Handler")

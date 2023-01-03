@@ -3,7 +3,6 @@ import signal
 import threading
 
 import psutil
-import systemd.daemon
 
 from Server import Server
 import sys, os, time, atexit
@@ -111,7 +110,11 @@ class Daemon(object):
         Start daemon.
         """
         print('Startup complete')
-        systemd.daemon.notify('READY=1')
+        try:
+            import systemd.daemon
+            systemd.daemon.notify('READY=1')
+        except:
+            print("Failed to notify SystemD.")
 
         # Handle signals
         signal.signal(signal.SIGINT, self._sigterm_handler)
