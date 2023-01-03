@@ -13,7 +13,10 @@ from utils.system.FolderUtils import FolderUtils
 """
    Initialize logging and displays information
    :return: None
-   """
+"""
+
+INFO_LOG_HANDLER = None
+ERROR_LOG_HANDLER = None
 try:
     log_folder = str(LOG_FOLDER)
     log_level = str(LOG_LEVEL)
@@ -53,6 +56,7 @@ except Exception as e:
     print("Failed to create the file system log handlers.", e)
 
 # System D
+journald_handler = None
 try:
     from systemd.journal import JournaldLogHandler
     journald_handler = JournaldLogHandler()
