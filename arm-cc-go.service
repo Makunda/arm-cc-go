@@ -5,11 +5,9 @@ After=multi-user.target
 [Service]
 Type=exec
 Restart=always
-ExecStart=/usr/bin/python3.10 /home/ubuntu/prod/arm-go/main.py start
+ExecStart=python3.10 /home/ubuntu/prod/arm-go/main.py start
 RestartSec = 5
 TimeoutStartSec = infinity
-Wants = network-online.target
-After = network.target network-online.target
 
 [Install]
 WantedBy=multi-user.target
