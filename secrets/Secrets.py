@@ -37,6 +37,10 @@ if LOG_FOLDER is None:
     if not log_path.exists():
         os.makedirs(log_path)
     LOG_FOLDER = str(log_path)
+else:
+    log_path = Path(LOG_FOLDER)
+    if not log_path.is_dir():
+        log_path.mkdir()
 
 TEMP_FOLDER = os.getenv('TEMP_FOLDER', None)
 if TEMP_FOLDER is None:

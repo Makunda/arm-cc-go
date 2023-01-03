@@ -30,7 +30,7 @@ def token_required(f):
         if not token:
             return ApiResponse("Not authorized", None, ["Token is missing"], HTTPStatus.FORBIDDEN).build()
 
-        if token == Secrets.API_TOKEN:
+        if token != Secrets.API_TOKEN:
             return ApiResponse("Not authorized", None, ["Token is invalid"], HTTPStatus.FORBIDDEN).build()
 
         return f(*args, **kwargs)
