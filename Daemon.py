@@ -25,6 +25,7 @@ class Daemon(object):
         self.waitToHardKill = 3  # when terminate a process, wait until kill the process with SIGTERM signal
         self.isReloadSignal = False
         self._canDaemonRun = True
+        self._is_daemon = False
         self.processName = os.path.basename(sys.argv[0])
 
         self.stdin = FolderUtils.merge_file(stdin)
@@ -33,7 +34,10 @@ class Daemon(object):
         self.pidfile = pidfile
 
     def _sigterm_handler(self, signum, frame):
-        self._canDaemonRun = False
+        if self._is_daemon:
+            self._canDaemonRun = False
+        else:
+            sys.exit(1)
 
     def _reload_handler(self, signum, frame):
         self.isReloadSignal = True
@@ -42,6 +46,8 @@ class Daemon(object):
         """
         Make a daemon, do double-fork magic.
         """
+        self._is_daemon = True
+
         try:
             pid = os.fork()
             if pid > 0:
