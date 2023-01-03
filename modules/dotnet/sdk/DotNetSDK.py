@@ -61,6 +61,7 @@ class DotNetSDK(ModuleSDK):
         packet_version_not_found = f"Unable to find package {package.name} with version"
 
         re_package_compatible = re.compile(f"Package '{package.name}' is compatible with all the specified frameworks in project")
+        re_package_incompatible = re.compile(f"Package '{package.name}' is incompatible with")
         re_package_partially_compatible = re.compile(f"Package '{package.name}'.*\. This package may not be fully compatible with your project\.")
 
         # Compatibility result declaration
@@ -68,14 +69,22 @@ class DotNetSDK(ModuleSDK):
         compatible: Compatibility = Compatibility.UNKNOWN
         error: str = ""
 
+        print("Debug")
+        print("stdout", s_stdout)
+        print("stderr", s_stderr)
+
         if bool(re_package_compatible.search(s_stdout)):
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = Compatibility.COMPATIBLE
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
-        elif bool(re_package_partially_compatible.search(s_stdout)):
+        elif bool(re_package_partially_compatible.search(s_stdout)) or bool(re_package_partially_compatible.search(s_stderr)):
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = Compatibility.PARTIAL
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
+        elif bool(re_package_incompatible.search(s_stdout)) or bool(re_package_incompatible.search(s_stderr)):
+            message = str(CompatibilityStatus.NON_COMPATIBLE.value)
+            compatible = Compatibility.INCOMPATIBLE
+            self.__logger.info(f"{package.to_string()} is not compatible.")
         elif packet_not_found in s_stderr:
             # Incompatible package
             message = str(CompatibilityStatus.NON_COMPATIBLE.value)
