@@ -124,8 +124,7 @@ class Daemon(object):
         # Daemonize the main process
         if daemon:
             self._makeDaemon()
-
-        self._redirect_process_output()
+            self._redirect_process_output()
 
         # Start a infinitive loop that periodically runs run() method
         self._infiniteLoop()
