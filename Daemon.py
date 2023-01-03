@@ -27,9 +27,9 @@ class Daemon(object):
         self._canDaemonRun = True
         self.processName = os.path.basename(sys.argv[0])
 
-        self.stdin = FolderUtils.merge_folder(stdin)
-        self.stdout = FolderUtils.merge_folder(stdout)
-        self.stderr = FolderUtils.merge_folder(stderr)
+        self.stdin = FolderUtils.merge_file(stdin)
+        self.stdout = FolderUtils.merge_file(stdout)
+        self.stderr = FolderUtils.merge_file(stderr)
         self.pidfile = pidfile
 
     def _sigterm_handler(self, signum, frame):

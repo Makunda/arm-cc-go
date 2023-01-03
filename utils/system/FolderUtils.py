@@ -30,6 +30,24 @@ class FolderUtils:
         return path
 
     @staticmethod
+    def merge_file(path: str) -> str:
+        """
+        Check a folder and create it if necessary
+        :param path of the folder to create
+        :return: Path of the folder
+        """
+        # Check whether the specified path exists or not
+        isExist = os.path.isfile(path)
+
+        if not isExist:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as f:
+                f.write("")
+
+        return path
+
+
+    @staticmethod
     def get_folder_checksum(path: str):
         """
         Calculate and return the checksum of a directory
