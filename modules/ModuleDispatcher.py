@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from enumerations.CompatibiltyStatus import CompatibilityStatus
+from enumerations.CompatibiltyStatus import CompatibilityStatus, Compatibility
 from enumerations.Language import Language
 from interface.CompatibilityResult import CompatibilityResult
 from interface.Package import Package
@@ -66,4 +66,4 @@ class ModuleDispatcher(metaclass=SingletonMeta):
         if language in self.__sdk_map.keys():
             return self.__sdk_map[language].pull_package(package)
         else:
-            return CompatibilityResult(package, str(CompatibilityStatus.LANGUAGE_NOT_SUPPORTED.value), False)
+            return CompatibilityResult(package, str(CompatibilityStatus.LANGUAGE_NOT_SUPPORTED.value), Compatibility.UNKNOWN)

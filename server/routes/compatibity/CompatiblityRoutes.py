@@ -46,8 +46,12 @@ def package_check(language: str):
         # The package has a specific origin to try
         origin = data["origin"]
 
+    target = None
+    if "target" in data:
+        target = data["target"]
+
     try:
-        package = Package(data["name"], data["version"], str(origin))
+        package = Package(data["name"], data["version"], str(origin), target)
     except Exception as e:
         __logger.info(f"Failed to build the package", e)
         return ApiResponse("Compatibility result", None, ["Invalid package data sent"], 400).build()

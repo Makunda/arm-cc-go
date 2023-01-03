@@ -9,6 +9,7 @@ class CompatibilityResult:
     package: Package
     message: str
     compatible: str
+    target: str
     error: str
 
     def __init__(self, package: Package, message: str = "",
