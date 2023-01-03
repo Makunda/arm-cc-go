@@ -8,11 +8,13 @@ from secrets.Secrets import DAEMON_FILE
 
 if __name__ == "__main__":
     daemon = Daemon(DAEMON_FILE)
-    usageMessage = f"Usage: {sys.argv[0]} (start|stop|restart|status|reload|version)"
+    usageMessage = f"Usage: {sys.argv[0]} (start|daemon|stop|restart|status|reload|version)"
     if len(sys.argv) == 2:
         choice = sys.argv[1]
         if choice == "start":
             daemon.start()
+        elif choice == "daemon":
+            daemon.start(True)
         elif choice == "stop":
             daemon.stop()
         elif choice == "restart":

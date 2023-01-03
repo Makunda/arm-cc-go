@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 Type=simple
 Restart=always
-ExecStart=/usr/bin/python3.8 /home/ec2-user/CC/arm-cc-go/main.py
+ExecStart=/usr/bin/python3.8 /home/ubuntu/prod/arm-go/main.py start
 
 [Install]
 WantedBy=multi-user.target

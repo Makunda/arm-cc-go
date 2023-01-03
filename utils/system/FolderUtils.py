@@ -11,12 +11,13 @@ class FolderUtils:
     Static class managing the folders
     """
 
+
     @staticmethod
-    def merge_folder(path: str):
+    def merge_folder(path: str) -> str:
         """
         Check a folder and create it if necessary
-        :param path Path of the folder to create
-        :return:
+        :param path of the folder to create
+        :return: Path of the folder
         """
         # Check whether the specified path exists or not
         isExist = os.path.exists(path)
@@ -25,6 +26,8 @@ class FolderUtils:
             # Create a new directory because it does not exist
             os.makedirs(path)
             logging.info("New folder created at: {0}.".format(path))
+
+        return path
 
     @staticmethod
     def get_folder_checksum(path: str):

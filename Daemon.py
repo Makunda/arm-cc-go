@@ -6,10 +6,10 @@ import psutil
 
 from Server import Server
 import sys, os, time, atexit
-from signal import SIGTERM
-from typing import IO
+
 
 from secrets.Secrets import STD_OUT_FILE, STD_ERR_FILE
+from utils.system.FolderUtils import FolderUtils
 
 
 class Daemon(object):
@@ -26,9 +26,10 @@ class Daemon(object):
         self.isReloadSignal = False
         self._canDaemonRun = True
         self.processName = os.path.basename(sys.argv[0])
-        self.stdin = stdin
-        self.stdout = stdout
-        self.stderr = stderr
+
+        self.stdin = FolderUtils.merge_folder(stdin)
+        self.stdout = FolderUtils.merge_folder(stdout)
+        self.stderr = FolderUtils.merge_folder(stderr)
         self.pidfile = pidfile
 
     def _sigterm_handler(self, signum, frame):
@@ -67,8 +68,9 @@ class Daemon(object):
             print(m)
             sys.exit(1)
 
-        m = "The daemon process is going to background."
-        print(m)
+        print("The daemon process is going to background.")
+
+    def _redirect_process_output(self):
         # Redirect standard file descriptors.
         sys.stdout.flush()
         sys.stderr.flush()
@@ -84,6 +86,7 @@ class Daemon(object):
         with open(self.pidfile, 'w+') as pid_file:
             pid_file.write("%s\n" % pid)
 
+
     def delpid(self):
         os.remove(self.pidfile)
 
@@ -96,7 +99,7 @@ class Daemon(object):
                     procs.append(p)
         return procs
 
-    def start(self):
+    def start(self, daemon=False):
         """
         Start daemon.
         """
@@ -119,7 +122,11 @@ class Daemon(object):
             sys.exit(1)
 
         # Daemonize the main process
-        self._makeDaemon()
+        if daemon:
+            self._makeDaemon()
+
+        self._redirect_process_output()
+
         # Start a infinitive loop that periodically runs run() method
         self._infiniteLoop()
 
