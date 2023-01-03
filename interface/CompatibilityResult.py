@@ -20,7 +20,7 @@ class CompatibilityResult:
 
         self.message = message
         self.package = package
-        self.compatible = str(compatible.value)
+        self.compatible = str(compatible.value[0])
         self.error = error
 
     def serialize(self) -> dict:
@@ -30,6 +30,6 @@ class CompatibilityResult:
         return {
             "message": self.message,
             "package": self.package.serialize(),
-            "compatible": str(self.compatible),
+            "compatible": self.compatible,
             "error": self.error
         }
