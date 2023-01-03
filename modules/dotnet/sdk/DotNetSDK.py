@@ -60,10 +60,10 @@ class DotNetSDK(ModuleSDK):
         packet_not_found = f"Unable to find package {package.name}. No packages exist with this id in source(s): nuget.org"
         packet_version_not_found = f"Unable to find package {package.name} with version"
 
-        san_package_name = str(f"{package.name} {package.version}").replace(".", "\.")
+        san_package_name = str(f"{package.name} {package.version}")
         re_package_compatible = re.compile(f"Package '{san_package_name}' is compatible with all the specified frameworks in project")
         re_package_incompatible = re.compile(f"Package '{san_package_name}' is incompatible with")
-        re_package_partially_compatible = re.compile(f"Package '{san_package_name}'.*\. This package may not be fully compatible with your project\.")
+        re_package_partially_compatible = re.compile(f"Package '{san_package_name}'.*. This package may not be fully compatible with your project.")
 
         # Compatibility result declaration
         message: str = ""
@@ -72,7 +72,6 @@ class DotNetSDK(ModuleSDK):
 
         print("Debug")
         print("stdout", s_stdout)
-        print("stderr", s_stderr)
         print("")
         print("re_package_compatible", re_package_compatible)
         print("re_package_incompatible", re_package_incompatible)
