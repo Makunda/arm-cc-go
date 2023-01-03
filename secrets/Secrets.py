@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from codes.ExitCodes import ExitCodes
 from utils.PrintUtils import PrintUtils
+from utils.system.FolderUtils import FolderUtils
 
 load_dotenv()
 
@@ -31,16 +32,19 @@ if LOGGER_NAME is None:
     PrintUtils.error("Missing LOGGER_NAME parameters. Falling back to default ARM-CC-JAVA.")
     LOGGER_NAME = "ARM-CC-GO"
 
-LOG_FOLDER = os.getenv('LOG_FOLDER', None)
+DEFAULT_LOG_FOLDER = os.path.join(os.path.expanduser('~'), "/ARM-CC-GO", "/logs")
+LOG_FOLDER = os.getenv('LOG_FOLDER', DEFAULT_LOG_FOLDER)
 if LOG_FOLDER is None:
     log_path = Path.home().joinpath(f'{MODULE_NAME}/logs/')
     if not log_path.exists():
         os.makedirs(log_path)
     LOG_FOLDER = str(log_path)
 else:
-    log_path = Path(LOG_FOLDER)
-    if not log_path.is_dir():
-        log_path.mkdir()
+    try:
+        FolderUtils.merge_folder(LOG_FOLDER)
+    except:
+        print("Failed to create log folder at [%s]" % LOG_FOLDER)
+
 
 TEMP_FOLDER = os.getenv('TEMP_FOLDER', None)
 if TEMP_FOLDER is None:

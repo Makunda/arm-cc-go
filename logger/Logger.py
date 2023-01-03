@@ -9,46 +9,55 @@ from logger.LoggerUtils import LoggerUtils
 from metaclass.SingletonMeta import SingletonMeta
 from secrets.Secrets import LOG_FOLDER, LOG_LEVEL, MODULE_NAME
 from utils.system.FolderUtils import FolderUtils
+from systemd.journal import JournaldLogHandler
 
 """
    Initialize logging and displays information
    :return: None
    """
-log_folder = str(LOG_FOLDER)
-log_level = str(LOG_LEVEL)
+try:
+    log_folder = str(LOG_FOLDER)
+    log_level = str(LOG_LEVEL)
 
-# Create log folder if needed
-log_path = os.path.join(log_folder)
-FolderUtils.merge_folder(log_path)
+    # Create log folder if needed
+    log_path = os.path.join(log_folder)
+    FolderUtils.merge_folder(log_path)
 
-# Change the permission over the log folder
-os.chmod(log_path, 0o777)
+    # Change the permission over the log folder
+    os.chmod(log_path, 0o777)
 
-# Print log files and level
-message = "Logs will be saved to {0}. Log level is: {1}".format(log_folder, log_level)
-logging.debug(message)
+    # Print log files and level
+    message = "Logs will be saved to {0}. Log level is: {1}".format(log_folder, log_level)
+    logging.debug(message)
 
-timestamp = ""
+    timestamp = ""
 
-# define logs files and folders
-INFO_FILE = f"{MODULE_NAME}_info_{timestamp}.log"
-INFO_FILE = os.path.join(log_folder, INFO_FILE)
+    # define logs files and folders
+    INFO_FILE = f"{MODULE_NAME}_info_{timestamp}.log"
+    INFO_FILE = os.path.join(log_folder, INFO_FILE)
 
-# Info File
-INFO_LOG_HANDLER = RotatingFileHandler(INFO_FILE, maxBytes=1048576, backupCount=5)
-INFO_LOG_HANDLER.setFormatter(
-    logging.Formatter(f'%(asctime)s %(levelname)s : {MODULE_NAME} : %(message)s ' '[in %(pathname)s:%(lineno)d]'))
-INFO_LOG_HANDLER.setLevel(logging.INFO)
+    # Info File
+    INFO_LOG_HANDLER = RotatingFileHandler(INFO_FILE, maxBytes=1048576, backupCount=5)
+    INFO_LOG_HANDLER.setFormatter(
+        logging.Formatter(f'%(asctime)s %(levelname)s : {MODULE_NAME} : %(message)s ' '[in %(pathname)s:%(lineno)d]'))
+    INFO_LOG_HANDLER.setLevel(logging.INFO)
 
-# Error File
-ERROR_FILE = f"{MODULE_NAME}_errors_{timestamp}.log"
-ERROR_FILE = os.path.join(log_folder, ERROR_FILE)
+    # Error File
+    ERROR_FILE = f"{MODULE_NAME}_errors_{timestamp}.log"
+    ERROR_FILE = os.path.join(log_folder, ERROR_FILE)
 
-ERROR_LOG_HANDLER = RotatingFileHandler(ERROR_FILE, maxBytes=1048576, backupCount=5)
-ERROR_LOG_HANDLER.setFormatter(
-    logging.Formatter(f'%(asctime)s %(levelname)s : {MODULE_NAME} : %(message)s ' '[in %(pathname)s:%(lineno)d]'))
-ERROR_LOG_HANDLER.setLevel(logging.ERROR)
+    ERROR_LOG_HANDLER = RotatingFileHandler(ERROR_FILE, maxBytes=1048576, backupCount=5)
+    ERROR_LOG_HANDLER.setFormatter(
+        logging.Formatter(f'%(asctime)s %(levelname)s : {MODULE_NAME} : %(message)s ' '[in %(pathname)s:%(lineno)d]'))
+    ERROR_LOG_HANDLER.setLevel(logging.ERROR)
+except Exception as e:
+    print("Failed to create the file system log handlers.", e)
 
+# System D
+try:
+    journald_handler = JournaldLogHandler()
+except Exception as e:
+    print("Failed to create the System D Handler")
 
 class Logger(metaclass=SingletonMeta):
     """
@@ -76,8 +85,14 @@ class Logger(metaclass=SingletonMeta):
             local_level = LoggerUtils.get_default_level()
 
         logger = logging.getLogger(name)
-        logger.addHandler(INFO_LOG_HANDLER)
-        logger.addHandler(ERROR_LOG_HANDLER)
+        if INFO_LOG_HANDLER:
+            logger.addHandler(INFO_LOG_HANDLER)
+        if ERROR_LOG_HANDLER:
+            logger.addHandler(ERROR_LOG_HANDLER)
+
         logger.addHandler(default_handler)
         logger.setLevel(local_level)
+
+        if journald_handler:
+            logger.setLevel(journald_handler)
         return logger

@@ -1,5 +1,4 @@
 import glob
-import logging
 import os
 from typing import List
 
@@ -20,15 +19,15 @@ class FolderUtils:
         :return: Path of the folder
         """
         # Check whether the specified path exists or not
-        isExist = os.path.exists(path)
+        try:
+            isExist = os.path.exists(path)
 
-        if not isExist:
-            # Create a new directory because it does not exist
-            os.makedirs(path)
-            logging.info("New folder created at: {0}.".format(path))
-
-        return path
-
+            if not isExist:
+                # Create a new directory because it does not exist
+                os.makedirs(path)
+            return path
+        except Exception as e:
+            raise FileNotFoundError("Failed to create the file at [%s]" % path)
     @staticmethod
     def merge_file(path: str) -> str:
         """
