@@ -3,7 +3,7 @@ Description=ARM-CC-GO Service
 After=multi-user.target
 
 [Service]
-Type=notify
+Type=exec
 Restart=always
 ExecStart=python3.10 /home/ubuntu/prod/arm-go/main.py start
 RestartSec = 5

@@ -1,7 +1,8 @@
+import re
 import subprocess
 
 from Definitions import DOTNET_DIR
-from enumerations.CompatibiltyStatus import CompatibilityStatus
+from enumerations.CompatibiltyStatus import CompatibilityStatus, Compatibility
 from interface.CompatibilityResult import CompatibilityResult
 from interface.Package import Package
 from logger.Logger import Logger
@@ -59,34 +60,36 @@ class DotNetSDK(ModuleSDK):
         packet_not_found = f"Unable to find package {package.name}. No packages exist with this id in source(s): nuget.org"
         packet_version_not_found = f"Unable to find package {package.name} with version"
 
+        re_package_compatible = re.compile(f"Package '{package.name}' is compatible with all the specified frameworks in project")
+        re_package_partially_compatible = re.compile(f"Package '{package.name}'.*\. This package may not be fully compatible with your project\.")
+
         # Compatibility result declaration
         message: str = ""
-        compatible: bool = False
+        compatible: Compatibility = Compatibility.UNKNOWN
         error: str = ""
 
-        if  packet_added in s_stdout:
+        if bool(re_package_compatible.search(s_stdout)):
             message = str(CompatibilityStatus.COMPATIBLE.value)
-            compatible = True
+            compatible = Compatibility.COMPATIBLE
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
-        elif packet_updated in s_stdout:
-            # Updated package
+        elif bool(re_package_partially_compatible.search(s_stdout)):
             message = str(CompatibilityStatus.COMPATIBLE.value)
-            compatible = True
-            self.__logger.info(f"{package.to_string()} has been updated in the project.")
+            compatible = Compatibility.PARTIAL
+            self.__logger.info(f"{package.to_string()} has been installed in the project.")
         elif packet_not_found in s_stderr:
             # Incompatible package
             message = str(CompatibilityStatus.NON_COMPATIBLE.value)
-            compatible = False
+            compatible = Compatibility.INCOMPATIBLE
             error = f"{package.to_string()} does not exist for this architecture."
             self.__logger.error(f"{package.to_string()} does not exist for this architecture.")
         elif packet_version_not_found in s_stderr:
             message = str(CompatibilityStatus.VERSION_NON_COMPATIBLE.value)
-            compatible = False
+            compatible =  Compatibility.INCOMPATIBLE
             error = f"{package.to_string()} does not exist in this version."
             self.__logger.error(f"{package.to_string()} does not exist in this version.")
         else:
             message = str(CompatibilityStatus.UNKNOWN.value)
-            compatible = False
+            compatible =  Compatibility.INCOMPATIBLE
             error = "Check server's logs for more details."
             self.__logger.error(f"{package.to_string()} pulled failed. "
                                 f"Output: {s_stdout}. "
