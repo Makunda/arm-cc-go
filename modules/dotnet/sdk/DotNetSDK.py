@@ -9,6 +9,7 @@ from interface.Package import Package
 from logger.Logger import Logger
 from modules.ModuleSDK import ModuleSDK
 from secrets.Secrets import PROCESS_TIMEOUT
+from templates.dotnet.CsProjTemplate import cs_proj_template_6_0
 from utils.system.PathUtils import PathUtils
 from utils.system.ProcessUtils import ProcessUtils
 
@@ -26,6 +27,8 @@ class DotNetSDK(ModuleSDK):
     _project_path = DOTNET_DIR
     _initialized: bool = False
 
+    __template_cs_proj: str = cs_proj_template_6_0
+
     def clean_cs_proj(self):
         """
             Clean the CS Proj
@@ -34,16 +37,21 @@ class DotNetSDK(ModuleSDK):
         for file in cs_files:
             try:
                 with open(file, mode="w") as f:
-                    lines = f.read()
-                    content = re.sub("<ItemGroup>[.\s\S\n\r]*<\/ItemGroup>", "", lines)
-
-                    # Cursor at beginning
-                    f.seek(0)
-                    # Reset everything between Item group anchors
-                    f.write(re.sub(r"<ItemGroup>[.\s\S\n\r]*<\/ItemGroup>>", r"",content))
-                    f.truncate()
+                    f.write(cs_proj_template_6_0)
             except:
                 self.__logger.error(f"Failed to open file with path: [{file}]")
+
+    def save_cs_proj(self):
+        """
+            Clean the CS Proj
+        """
+        cs_files = glob.glob(self._project_path + "*.csproj")
+        if len(cs_files) > 0:
+            try:
+                with open(cs_files[0], mode="r") as f:
+                    self.__template_cs_proj = f.read()
+            except:
+                self.__logger.error(f"Failed to open file with path: [{cs_files[0]}]")
 
     def wrapped_initialize(self):
         try:
@@ -53,8 +61,9 @@ class DotNetSDK(ModuleSDK):
             raise e
 
         try:
-            ProcessUtils.execute("dotnet new console", self._project_path)
+            ProcessUtils.execute("dotnet new console --framework net6.0", self._project_path)
             self.__logger.info(f"New dotnet project created at {self._project_path}.")
+            self.save_cs_proj()
 
         except Exception as e:
             self.__logger.error(f"Failed to create the dotnet project.")
@@ -85,7 +94,8 @@ class DotNetSDK(ModuleSDK):
         packet_version_not_found = f"Unable to find package {package.name} with version"
 
         san_package_name = str(f"{package.name} {package.version}").replace(".", "\\.")
-        re_package_compatible = re.compile(f"Package '{san_package_name}' is compatible with all the specified frameworks in project")
+        re_package_compatible = re.compile(
+            f"Package '{san_package_name}' is compatible with all the specified frameworks in project")
         re_package_incompatible = re.compile(f"Package '{san_package_name}' is incompatible with")
         re_package_partially_compatible = re.compile(f"Package '{san_package_name}' was restored using")
 
@@ -105,7 +115,8 @@ class DotNetSDK(ModuleSDK):
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = Compatibility.COMPATIBLE
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
-        elif bool(re_package_partially_compatible.search(s_stdout)) or bool(re_package_partially_compatible.search(s_stderr)):
+        elif bool(re_package_partially_compatible.search(s_stdout)) or bool(
+                re_package_partially_compatible.search(s_stderr)):
             message = str(CompatibilityStatus.COMPATIBLE.value)
             compatible = Compatibility.PARTIAL
             self.__logger.info(f"{package.to_string()} has been installed in the project.")
@@ -121,12 +132,12 @@ class DotNetSDK(ModuleSDK):
             self.__logger.error(f"{package.to_string()} does not exist for this architecture.")
         elif packet_version_not_found in s_stderr:
             message = str(CompatibilityStatus.VERSION_NON_COMPATIBLE.value)
-            compatible =  Compatibility.INCOMPATIBLE
+            compatible = Compatibility.INCOMPATIBLE
             error = f"{package.to_string()} does not exist in this version."
             self.__logger.error(f"{package.to_string()} does not exist in this version.")
         else:
             message = str(CompatibilityStatus.UNKNOWN.value)
-            compatible =  Compatibility.INCOMPATIBLE
+            compatible = Compatibility.INCOMPATIBLE
             error = "Check server's logs for more details."
             self.__logger.error(f"{package.to_string()} pulled failed. "
                                 f"Output: {s_stdout}. "
