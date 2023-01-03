@@ -1,3 +1,4 @@
+import glob
 import re
 import subprocess
 
@@ -25,6 +26,25 @@ class DotNetSDK(ModuleSDK):
     _project_path = DOTNET_DIR
     _initialized: bool = False
 
+    def clean_cs_proj(self):
+        """
+            Clean the CS Proj
+        """
+        cs_files = glob.glob(self._project_path + "*.csproj")
+        for file in cs_files:
+            try:
+                with open(file, mode="w") as f:
+                    lines = f.read()
+                    content = re.sub("<ItemGroup>[.\s\S\n\r]*<\/ItemGroup>", "", lines)
+
+                    # Cursor at beginning
+                    f.seek(0)
+                    # Reset everything between Item group anchors
+                    f.write(re.sub(r"<ItemGroup>[.\s\S\n\r]*<\/ItemGroup>>", r"",content))
+                    f.truncate()
+            except:
+                self.__logger.error(f"Failed to open file with path: [{file}]")
+
     def wrapped_initialize(self):
         try:
             PathUtils.mergeFolder(self._project_path)
@@ -41,6 +61,10 @@ class DotNetSDK(ModuleSDK):
             raise e
 
     def wrapped_pull_package(self, package: Package) -> CompatibilityResult:
+        # Reset the proj
+        self.clean_cs_proj()
+
+        # Add the component
         command = f"dotnet add package {package.name} --version {package.version}"
 
         proc = subprocess.Popen(command,
