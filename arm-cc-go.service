@@ -6,6 +6,8 @@ After=multi-user.target
 Type=simple
 Restart=always
 ExecStart=/usr/bin/python3.10 /home/ubuntu/prod/arm-go/main.py start
+RestartSec = 5
+TimeoutStartSec = infinity
 
 [Install]
 WantedBy=multi-user.target
