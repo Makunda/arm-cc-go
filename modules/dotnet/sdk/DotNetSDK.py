@@ -74,7 +74,7 @@ class DotNetSDK(ModuleSDK):
         self.clean_cs_proj()
 
         # Add the component
-        command = f"dotnet add package {package.name} --version {package.version}"
+        command = f"dotnet add package {package.name} --version {package.version} --framework {package.target}"
 
         proc = subprocess.Popen(command,
                                 stdin=subprocess.PIPE,
